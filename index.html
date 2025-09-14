@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>คำนวณเปอร์เซ็นต์การเข้าชั้นเรียน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+  }
+  .container {
+    background-color: #fff;
+    padding: 25px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  .row {
+    margin-bottom: 15px;
+  }
+  label {
+    display: inline-block;
+    width: 200px;
+  }
+  input[type="number"], input[type="text"] {
+    width: 100px;
+    padding: 5px;
+    text-align: center;
+  }
+  input[readonly] {
+    background-color: #e8e8e8;
+  }
+  button {
+    padding: 5px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  #evaluateBtn { background-color: #4CAF50; color: white; border: none; }
+  #clearBtn { background-color: #f44336; color: white; border: none; }
+  #authorBtn { background-color: #9b59b6; color: white; border: none; }
+
+  /* Modal */
+  #authorModal {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5);
+    justify-content:center; align-items:center;
+  }
+  #modalContent {
+    background:#fff;
+    padding:20px 30px;
+    border-radius:8px;
+    text-align:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
+    font-size:18px;
+    min-width:250px;
+    position:relative;
+    transform: translateY(-200px);
+    opacity:0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  #closeModal {
+    position:absolute; top:5px; right:10px; cursor:pointer; font-weight:bold; font-size:20px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <label>จำนวนครั้งที่มาเข้าชั้น:</label>
+    <input type="number" id="attend" min="0" max="15">
+    <span>ครั้ง</span>
+  </div>
+  <div class="row">
+    <label>คิดเป็น:</label>
+    <input type="text" id="percent" readonly>
+    <span>เปอร์เซ็นต์</span>
+  </div>
+  <div class="row">
+    <label>ผลการประเมิน:</label>
+    <input type="text" id="result" readonly>
+  </div>
+  <div class="row">
+    <button id="evaluateBtn">ประเมิน</button>
+    <button id="clearBtn">ลบข้อมูล</button>
+    <button id="authorBtn" onclick="showAuthor()">ผู้จัดทำ</button>
+  </div>
+</div>
+
+<!-- Modal ผู้จัดทำ -->
+<div id="authorModal">
+  <div id="modalContent">
+    <span id="closeModal">&times;</span>
+    <p>ผู้จัดทำ: นางสาวผุสดี กุลวงศ์</p>
+  </div>
+</div>
+
+<script>
+const TOTAL_CLASSES = 15;
+
+document.getElementById("evaluateBtn").addEventListener("click", function() {
+  const attend = Number(document.getElementById("attend").value);
+  if (attend < 0 || attend > TOTAL_CLASSES) {
+    alert("กรุณากรอกจำนวนครั้งที่มาเรียนระหว่าง 0 ถึง 15");
+    return;
+  }
+
+  const percent = ((attend / TOTAL_CLASSES) * 100).toFixed(2);
+  const percentField = document.getElementById("percent");
+  percentField.value = percent;
+
+  const resultField = document.getElementById("result");
+
+  if (percent >= 75) {
+    resultField.value = "ผ่าน";
+    resultField.style.color = "green";
+    percentField.style.color = "green";
+  } else {
+    resultField.value = "ไม่ผ่าน";
+    resultField.style.color = "red";
+    percentField.style.color = "red";
+  }
+});
+
+document.getElementById("clearBtn").addEventListener("click", function() {
+  document.getElementById("attend").value = "";
+  document.getElementById("percent").value = "";
+  const resultField = document.getElementById("result");
+  resultField.value = "";
+  resultField.style.color = "black";
+  document.getElementById("percent").style.color = "black";
+});
+
+// Modal ผู้จัดทำ
+function showAuthor() {
+  let modal = document.getElementById("authorModal");
+  let content = document.getElementById("modalContent");
+  modal.style.display = "flex";
+  setTimeout(() => {
+    content.style.transform = "translateY(0)";
+    content.style.opacity = "1";
+  }, 10);
+}
+
+function closeModal() {
+  let modal = document.getElementById("authorModal");
+  let content = document.getElementById("modalContent");
+  content.style.transform = "translateY(-200px)";
+  content.style.opacity = "0";
+  setTimeout(() => { modal.style.display = "none"; }, 500);
+}
+
+document.getElementById("closeModal").onclick = closeModal;
+window.onclick = function(event) {
+  let modal = document.getElementById("authorModal");
+  if(event.target == modal) closeModal();
+}
+</script>
+</body>
+</html>
